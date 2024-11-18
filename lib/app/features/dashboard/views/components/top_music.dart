@@ -14,7 +14,7 @@ class _TopMusic extends GetView<DashboardController> {
               "Top Music",
               style: Theme.of(context)
                   .textTheme
-                  .headline6!
+                  .titleLarge!
                   .copyWith(fontWeight: FontWeight.bold),
             ),
             Spacer(flex: 1),

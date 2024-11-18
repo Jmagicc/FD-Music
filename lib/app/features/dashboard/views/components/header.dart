@@ -87,8 +87,8 @@ class _Header extends StatelessWidget {
     final double _paddingVer = 20;
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        primary: Theme.of(Get.context!).canvasColor,
-        onPrimary: Theme.of(Get.context!).primaryColor,
+        backgroundColor: Theme.of(Get.context!).canvasColor,
+        foregroundColor: Theme.of(Get.context!).primaryColor,
         side: BorderSide(
           color: Theme.of(Get.context!).primaryColor,
         ),

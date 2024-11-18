@@ -12,7 +12,7 @@ class _PopularMusic extends GetView<DashboardController> {
           "Popular Music",
           style: Theme.of(context)
               .textTheme
-              .headline6!
+              .titleLarge!
               .copyWith(fontWeight: FontWeight.bold),
         ),
         SizedBox(height: kDefaultPadding / 2),

@@ -15,7 +15,7 @@ class _RecommendedAlbum extends GetView<DashboardController> {
                 "Recommended Album",
                 style: Theme.of(context)
                     .textTheme
-                    .headline6!
+                    .titleLarge!
                     .copyWith(fontWeight: FontWeight.bold),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,

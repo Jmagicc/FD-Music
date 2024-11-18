@@ -52,7 +52,7 @@ class SideBarButton extends StatelessWidget {
                 getName(value),
                 style: Theme.of(context)
                     .textTheme
-                    .bodyText2!
+                    .bodyMedium!
                     .copyWith(fontWeight: FontWeight.bold),
               ),
               onTap: () {
