@@ -33,6 +33,7 @@ abstract class IconConstant {
   static const album = _path + '/album.svg';
   static const event = _path + '/event.svg';
   static const hearth = _path + '/hearth.svg';
+  static const hearthFilled = _path + '/hearth_filled.svg';
   static const home = _path + '/home.svg';
   static const menu = _path + '/menu.svg';
   static const mic = _path + '/mic.svg';

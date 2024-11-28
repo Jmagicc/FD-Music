@@ -63,12 +63,7 @@ class _BottomNavbar extends GetView<DashboardPlayMusicController> {
     return Row(
       children: [
         SizedBox(width: 20),
-        ShadowImage(
-          imageProvider: controller.musicPlay.image,
-          size: Size(60, 60),
-          borderRadius: BorderRadius.circular(30),
-          offset: Offset(0, 5),
-        ),
+        RotatingAlbumCover(size: 60),
         SizedBox(width: 15),
         Expanded(
           child: Column(
@@ -102,29 +97,14 @@ class _BottomNavbar extends GetView<DashboardPlayMusicController> {
       children: [
         IconButton(
           iconSize: 30,
-          icon: Icon(
-            Icons.fast_rewind_outlined,
-          ),
+          icon: Icon(Icons.fast_rewind_outlined),
           onPressed: () {},
           tooltip: "previous song",
         ),
-        Obx(
-          () => IconButton(
-            iconSize: 40,
-            icon: AnimatedIcon(
-              icon: AnimatedIcons.play_pause,
-              progress: controller.animationPausePlay,
-              color: Theme.of(Get.context!).primaryColor,
-            ),
-            tooltip: (controller.isPlaying.value) ? "pause" : "play",
-            onPressed: () => controller.playOrPause(),
-          ),
-        ),
+        AnimatedPlayButton(),
         IconButton(
           iconSize: 30,
-          icon: Icon(
-            Icons.fast_forward_outlined,
-          ),
+          icon: Icon(Icons.fast_forward_outlined),
           onPressed: () {},
           tooltip: "next song",
         ),
@@ -133,31 +113,26 @@ class _BottomNavbar extends GetView<DashboardPlayMusicController> {
   }
 
   Widget _slider() {
-    return Obx(
-      () => Row(
-        children: [
-          Text(Duration(
-                  seconds: (controller.musicPlay.duration.inSeconds *
-                          _sliderValue.value)
-                      .toInt())
-              .formatMS()),
-          Expanded(
-            child: SliderTheme(
-              data: SliderTheme.of(Get.context!).copyWith(
-                  thumbColor: Colors.transparent,
-                  thumbShape: RoundSliderThumbShape(enabledThumbRadius: 0.0)),
-              child: Obx(
-                () => Slider(
-                  value: _sliderValue.value,
-                  activeColor: Theme.of(Get.context!).primaryColor,
-                  onChanged: (value) => _sliderValue.value = value,
-                ),
-              ),
+    return Row(
+      children: [
+        Obx(() => Text(Duration(
+          seconds: (controller.musicPlay.duration.inSeconds * _sliderValue.value).toInt()
+        ).formatMS())),
+        Expanded(
+          child: SliderTheme(
+            data: SliderTheme.of(Get.context!).copyWith(
+              thumbColor: Colors.transparent,
+              thumbShape: RoundSliderThumbShape(enabledThumbRadius: 0.0)
             ),
+            child: Obx(() => Slider(
+              value: _sliderValue.value,
+              activeColor: Theme.of(Get.context!).primaryColor,
+              onChanged: (value) => _sliderValue.value = value,
+            )),
           ),
-          Text(controller.musicPlay.duration.formatMS()),
-        ],
-      ),
+        ),
+        Text(controller.musicPlay.duration.formatMS()),
+      ],
     );
   }
 
@@ -166,10 +141,16 @@ class _BottomNavbar extends GetView<DashboardPlayMusicController> {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         Spacer(flex: 5),
-        IconButton(
-            icon: SvgPicture.asset(IconConstant.hearth),
-            onPressed: () {},
-            tooltip: "Liked song"),
+        Obx(() => IconButton(
+          icon: SvgPicture.asset(
+            controller.isLiked.value
+              ? IconConstant.hearthFilled
+              : IconConstant.hearth,
+            color: controller.isLiked.value ? Colors.red : Colors.grey[600],
+          ),
+          onPressed: () => controller.toggleLike(),
+          tooltip: "Liked song",
+        )),
         Spacer(flex: 1),
         IconButton(
           icon: SvgPicture.asset(IconConstant.music),
@@ -189,67 +170,107 @@ class _BottomNavbar extends GetView<DashboardPlayMusicController> {
 
   void showBottomSheetDetailSong() {
     Get.bottomSheet(
-        SizedBox(
-          height: Get.height * .95,
+      Container(
+        height: Get.height * .95,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
+        ),
+        child: SingleChildScrollView(
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Spacer(flex: 3),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(width: kDefaultPadding),
-                  IconButton(
-                    icon: Icon(Icons.arrow_downward_rounded),
-                    onPressed: () {
-                      if (Get.isBottomSheetOpen ?? false) {
-                        Get.back();
-                      }
-                    },
-                    tooltip: "close",
-                  ),
-                  Flexible(child: _actionsButton()),
-                ],
-              ),
-              Spacer(flex: 2),
-              ShadowImage(
-                imageProvider: controller.musicPlay.image,
-                size: Size(Get.width * .7, Get.width * .7),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              Spacer(flex: 2),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                alignment: Alignment.topLeft,
-                child: Text(
-                  controller.musicPlay.title,
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.left,
+              // 顶部操作栏
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: kDefaultPadding,
+                  vertical: kDefaultPadding / 2,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.keyboard_arrow_down),
+                      onPressed: () => Get.back(),
+                      tooltip: "Close",
+                    ),
+                    Row(
+                      children: [
+                        AnimatedLikeButton(size: 24),
+                        SizedBox(width: kDefaultPadding),
+                        IconButton(
+                          icon: SvgPicture.asset(
+                            IconConstant.music,
+                            color: Colors.grey[600],
+                          ),
+                          onPressed: () {},
+                          tooltip: "List music",
+                        ),
+                        SizedBox(width: kDefaultPadding),
+                        IconButton(
+                          icon: SvgPicture.asset(
+                            IconConstant.repeat,
+                            color: Colors.grey[600],
+                          ),
+                          onPressed: () {},
+                          tooltip: "Repeat",
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
+              
+              // 专辑封面
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                alignment: Alignment.topLeft,
-                child: Text(
-                  controller.musicPlay.singerName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.left,
-                ),
+                height: Get.width * .7,
+                padding: const EdgeInsets.symmetric(vertical: kDefaultPadding),
+                child: RotatingAlbumCover(size: Get.width * .7),
               ),
-              Spacer(flex: 1),
+              
+              // 歌曲信息
               Padding(
                 padding: const EdgeInsets.all(kDefaultPadding),
-                child: _slider(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      controller.musicPlay.title,
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      controller.musicPlay.singerName,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[600],
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: kDefaultPadding),
+                    _slider(),
+                    SizedBox(height: kDefaultPadding),
+                    _button(),
+                    SizedBox(height: kDefaultPadding),
+                  ],
+                ),
               ),
-              Spacer(flex: 1),
-              _button(),
-              Spacer(flex: 3),
             ],
           ),
         ),
-        isScrollControlled: true,
-        backgroundColor: Colors.white);
+      ),
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+    );
   }
 }

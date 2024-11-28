@@ -7,6 +7,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:music_app/app/constants/app_constant.dart';
+import 'package:music_app/app/features/dashboard/views/components/animated_like_button.dart';
+import 'package:music_app/app/features/dashboard/views/components/animated_play_button.dart';
+import 'package:music_app/app/features/dashboard/views/components/rotating_album_cover.dart';
 import 'package:music_app/app/shared_components/card_music.dart';
 import 'package:music_app/app/shared_components/shadow_image.dart';
 import 'package:music_app/app/shared_components/sidebar_button.dart';
@@ -76,6 +79,8 @@ class DashboardScreen extends StatelessWidget {
                 children: [
                   _Header(),
                   SizedBox(height: kDefaultPadding),
+                  _buildMusicPlayer(),
+                  SizedBox(height: kDefaultPadding),
                   Expanded(
                     child: SingleChildScrollView(
                       physics: BouncingScrollPhysics(),
@@ -114,6 +119,8 @@ class DashboardScreen extends StatelessWidget {
               onTapMenu: () => openDrawer(),
             ),
             SizedBox(height: kDefaultPadding),
+            _buildMusicPlayer(),
+            SizedBox(height: kDefaultPadding),
             Column(
               children: [
                 _TopMusic(),
@@ -138,6 +145,8 @@ class DashboardScreen extends StatelessWidget {
             onTapMenu: () => openDrawer(),
           ),
           SizedBox(height: kDefaultPadding),
+          _buildMusicPlayer(),
+          SizedBox(height: kDefaultPadding),
           Expanded(
             child: SingleChildScrollView(
               physics: BouncingScrollPhysics(),
@@ -161,5 +170,9 @@ class DashboardScreen extends StatelessWidget {
     if (_scaffoldKey.currentState != null) {
       _scaffoldKey.currentState!.openDrawer();
     }
+  }
+
+  Widget _buildMusicPlayer() {
+    return Container();
   }
 }
